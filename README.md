@@ -7,7 +7,7 @@ This Tampermonkey script redacts predefined sensitive information, such as phone
 1. Install the [Tampermonkey](https://www.tampermonkey.net/) extension for your browser.
 2. Open the Tampermonkey Dashboard.
 3. Click on the "+" tab to create a new script.
-4. Copy and paste the script from [script.js](./script.js) into the editor.
+4. Copy and paste the script from hideinfo.js into the editor.
 5. Replace the predefined variables in the `toRedact` object with the actual values you want to redact.
 6. Save the script by clicking the disk icon or pressing Ctrl + S.
 
@@ -23,7 +23,7 @@ You can customize the redacted strings in the `redacted` object to anything you 
 
 1. **Dynamic Content Handling:**
    - Improve the script to handle websites that load content dynamically using JavaScript.
-   - Monitor DOM changes and redact newly added sensitive information in real-time.
+   - Monitor DOM changes and redact newly added sensitive information in real-time. (Chat windows, change before page load/during rather than after)
 
 2. **User Interface:**
    - Develop a user interface to allow users to easily add, remove, or modify the sensitive information to redact without modifying the script.
