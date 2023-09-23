@@ -40,7 +40,7 @@
         phoneNumbers: ['123-456-7890', '987-654-3210'],
         ipAddresses: ['192.168.1.1', '10.0.0.1'],
         emailAddresses: ['test@gmail.com', 'test@test.com'],
-        usernames: ['jimi.did.it', 'user2'],
+        usernames: ['jimi.did.it', 'THISSTRINGWILLBEEXCLUDEDIFYOUHAVEITINSTALLED'],
         names: ['John Doe', 'Jane Doe', 'John', 'Jane']
     };
 
@@ -67,7 +67,7 @@
     function redactNode(node) {
         const selection = window.getSelection();
         const range = selection.rangeCount > 0 ? selection.getRangeAt(0) : null;
-        
+
         if (node.nodeType === Node.TEXT_NODE) {
             node.nodeValue = redactText(node.nodeValue);
         } else if (node.nodeType === Node.ELEMENT_NODE) {
@@ -78,20 +78,16 @@
                 redactNode(child);
             }
         }
-        
+
         if (range) {
             selection.removeAllRanges();
             selection.addRange(range);
         }
     }
 
-    document.addEventListener('DOMContentLoaded', () => {
-        redactNode(document.body); // Start redaction process when DOM is loaded
+    window.addEventListener('load', () => {
+        redactNode(document.body); // Start redaction process when everything is fully loaded
         document.documentElement.removeChild(overlay); // Remove overlay after initial redaction
-        
-        // Watch for changes in the DOM and apply redaction as necessary
-        const observer = new MutationObserver(() => redactNode(document.body));
-        observer.observe(document.body, {childList: true, subtree: true});
     });
 
 })();
