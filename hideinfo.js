@@ -3,7 +3,7 @@
 // @namespace    http://tampermonkey.net/
 // @version      0.1
 // @description  Redact predefined sensitive information on webpages
-// @author       You
+// @author       Robot
 // @match        *://*/*
 // @grant        none
 // @run-at       document-start
