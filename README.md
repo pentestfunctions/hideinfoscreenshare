@@ -1,57 +1,39 @@
-# Redact Sensitive Information Tampermonkey Script
+# Redact Sensitive Information UserScript
 
-This Tampermonkey script redacts predefined sensitive information, such as phone numbers, IP addresses, and email addresses, from any webpage you visit. This can be useful for maintaining privacy while screen-sharing.
+This UserScript automatically redacts predefined sensitive information on webpages, preventing unintended exposure of sensitive details.
+
+## Description
+When enabled, this script will:
+- Instantly overlay the webpage with a non-transparent gray layer to obscure the page contents as soon as it starts loading.
+- Redact sensitive information based on predefined patterns once the page has finished loading.
+- Remove the overlay, revealing the redacted webpage.
 
 ## Installation
-
-1. Install the [Tampermonkey](https://www.tampermonkey.net/) extension for your browser.
-2. Open the Tampermonkey Dashboard.
-3. Click on the "+" tab to create a new script.
-4. Copy and paste the script from hideinfo.js into the editor.
-5. Replace the predefined variables in the `toRedact` object with the actual values you want to redact.
-6. Save the script by clicking the disk icon or pressing Ctrl + S.
-
-## Usage
-
-Once installed, the script will automatically run on any webpage you visit and redact the specified information.
+1. Install a userscript manager extension like Tampermonkey or Greasemonkey on your browser.
+2. Create a new userscript and copy-paste the provided script.
+3. Save the userscript.
 
 ## Customization
+You can customize the information to redact by modifying the `toRedact` object in the script. The corresponding redacted strings can be customized in the `redacted` object.
 
-You can customize the redacted strings in the `redacted` object to anything you like.
+```javascript
+const toRedact = {
+    phoneNumbers: ['REDACTED@phone.com', 'REDACTED@phone.com'],
+    // ... other categories ...
+};
 
-## Possible Future Improvements
+const redacted = {
+    phoneNumbers: 'REDACTED@phone.com',
+    // ... other categories ...
+};
+```
 
-1. **Dynamic Content Handling:**
-   - Improve the script to handle websites that load content dynamically using JavaScript.
-   - Monitor DOM changes and redact newly added sensitive information in real-time. (Chat windows, change before page load/during rather than after)
+## Usage
+Once installed and active, the script will automatically run on all webpages (`*://*/*`), redacting sensitive information based on the predefined patterns. The page will be obscured by an overlay until the redaction is complete.
 
-2. **User Interface:**
-   - Develop a user interface to allow users to easily add, remove, or modify the sensitive information to redact without modifying the script.
+## Notes
+- This script runs at `document-start`, ensuring the overlay is displayed as early as possible.
+- The redaction and overlay removal occur after the `DOMContentLoaded` event to ensure the DOM is available for modification.
+- The script also observes the DOM for any changes and applies redaction to newly added elements.
 
-3. **Regular Expression Matching:**
-   - Instead of looking for exact matches, use regular expressions to redact any match of a certain pattern, like any phone number or email address.
 
-4. **Storage:**
-   - Use a secure method to store sensitive information outside the script, such as leveraging browser storage APIs with encryption, to prevent exposure of the sensitive information.
-
-5. **Multiple Redacted Strings:**
-   - Allow users to set different redacted strings for different types of information instead of using a single redacted string for all.
-
-6. **Performance Optimization:**
-   - Optimize the script for better performance, especially on websites with large amounts of text, by using more efficient text replacement methods.
-
-7. **Exclusion List:**
-   - Allow users to specify websites where the script should not run, to prevent interference with the normal functioning of those websites.
-
-8. **Notification:**
-   - Notify users when sensitive information has been redacted on a webpage.
-
-9. **Testing:**
-   - Develop a robust testing methodology to ensure the script works correctly on various websites and does not break them.
-
-10. **Documentation:**
-    - Improve documentation, including detailed installation and usage instructions, customization options, and troubleshooting tips.
-
-## Disclaimer
-
-This script may interfere with the normal functioning of some websites, especially those that use JavaScript to dynamically load content. Be cautious with the information you put in the script and ensure that you are not violating any laws or policies related to privacy and data protection.
