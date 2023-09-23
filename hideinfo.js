@@ -86,8 +86,10 @@
     }
 
     window.addEventListener('load', () => {
-        redactNode(document.body); // Start redaction process when everything is fully loaded
-        document.documentElement.removeChild(overlay); // Remove overlay after initial redaction
+        setTimeout(() => {
+            redactNode(document.body); // Start redaction process after a delay
+            document.documentElement.removeChild(overlay); // Remove overlay after initial redaction
+        }, 2000); // 2000 milliseconds (2 seconds) delay. Adjust as needed.
     });
 
 })();
