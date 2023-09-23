@@ -2,6 +2,8 @@
 
 This UserScript automatically redacts predefined sensitive information on webpages, preventing unintended exposure of sensitive details.
 
+THISSTRINGWILLBEEXCLUDEDIFYOUHAVEITINSTALLED
+
 ## Description
 When enabled, this script will:
 - Instantly overlay the webpage with a non-transparent gray layer to obscure the page contents as soon as it starts loading.
@@ -34,6 +36,8 @@ Once installed and active, the script will automatically run on all webpages (`*
 ## Notes
 - This script runs at `document-start`, ensuring the overlay is displayed as early as possible.
 - The redaction and overlay removal occur after the `DOMContentLoaded` event to ensure the DOM is available for modification.
+
+### Old version
 - The script also observes the DOM for any changes and applies redaction to newly added elements.
 
 
