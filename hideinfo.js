@@ -9,7 +9,6 @@
 // @run-at       document-start
 // ==/UserScript==
 
-
 (function() {
     'use strict';
 
@@ -28,21 +27,21 @@
                         '</div>' +
                         '<p style="color: #fff; font-size: 18px;">Redacting...</p>' +
                         '</div>';
-    document.body.appendChild(overlay); // Append overlay immediately when the script runs
+    document.documentElement.appendChild(overlay); // Append overlay to the html element as early as possible
 
-    // Define the spinner animation
+    // Define the spinner animation securely
     const style = document.createElement('style');
     style.type = 'text/css';
     style.innerHTML = '@keyframes spinner {0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); }}';
-    document.getElementsByTagName('head')[0].appendChild(style);
+    document.head.appendChild(style); // Append style to the head element as early as possible
 
     // Define the sensitive information to redact
     const toRedact = {
-        phoneNumbers: ['REDACTED@phone.com', 'REDACTED@phone.com'],
-        ipAddresses: ['REDACTED@ip.com', 'REDACTED@ip.com'],
-        emailAddresses: ['REDACTED@admin.com', 'REDACTED@admin.com'],
-        usernames: ['REDACTED_USER', 'REDACTED_USER'],
-        names: ['REDACTED_NAME', 'REDACTED_NAME', 'REDACTED_NAME', 'REDACTED_NAME']
+        phoneNumbers: ['123-456-7890', '987-654-3210'],
+        ipAddresses: ['192.168.1.1', '10.0.0.1'],
+        emailAddresses: ['test@gmail.com', 'test@test.com'],
+        usernames: ['jimi.did.it', 'user2'],
+        names: ['John Doe', 'Jane Doe', 'John', 'Jane']
     };
 
     // Define the redacted strings
@@ -66,10 +65,9 @@
     }
 
     function redactNode(node) {
-        // Preserve user selection
         const selection = window.getSelection();
         const range = selection.rangeCount > 0 ? selection.getRangeAt(0) : null;
-
+        
         if (node.nodeType === Node.TEXT_NODE) {
             node.nodeValue = redactText(node.nodeValue);
         } else if (node.nodeType === Node.ELEMENT_NODE) {
@@ -80,21 +78,20 @@
                 redactNode(child);
             }
         }
-
-        // Restore user selection
+        
         if (range) {
             selection.removeAllRanges();
             selection.addRange(range);
         }
     }
 
-    // Run the redactNode function when the webpage has finished loading
-    window.addEventListener('load', () => {
-        redactNode(document.body);
-        document.body.removeChild(overlay); // Remove overlay after initial redaction
-
+    document.addEventListener('DOMContentLoaded', () => {
+        redactNode(document.body); // Start redaction process when DOM is loaded
+        document.documentElement.removeChild(overlay); // Remove overlay after initial redaction
+        
         // Watch for changes in the DOM and apply redaction as necessary
-        new MutationObserver(() => redactNode(document.body))
-            .observe(document.body, {childList: true, subtree: true});
+        const observer = new MutationObserver(() => redactNode(document.body));
+        observer.observe(document.body, {childList: true, subtree: true});
     });
+
 })();
