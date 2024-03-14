@@ -1,6 +1,6 @@
-# Redact Sensitive Information UserScript
+# Blind Eye UserScript
 
-This UserScript automatically redacts predefined sensitive information on webpages, preventing unintended exposure of sensitive details.
+This UserScript "Blind Eye" automatically redacts predefined sensitive information on webpages, preventing unintended exposure of sensitive details.
 
 ## Description
 When enabled, this script will:
@@ -41,7 +41,7 @@ const replacementStrings = {
 ```
 
 ## Usage
-Once installed and active, the script will automatically run on all webpages (`*://*/*`), redacting sensitive information based on the predefined patterns. The page will be obscured by an overlay until the redaction is complete.
+Once installed and active, the script will automatically run on all webpages (`*://*/*`), redacting sensitive information based on the predefined patterns. The page will be obscured by an overlay until the removal of the sensitive information is complete.
 
 ## Notes
 - This script runs at `document-start`, ensuring the overlay is displayed as early as possible.
