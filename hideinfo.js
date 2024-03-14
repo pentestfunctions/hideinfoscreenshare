@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Blind eye
 // @namespace    http://tampermonkey.net/
-// @version      0.2
+// @version      0.3
 // @description  Remove sensitive information on websites and prevent leakages!
 // @author       Robot
 // @match        *://*/*
@@ -38,7 +38,6 @@
     "@keyframes spinner {0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); }}";
   document.head.appendChild(style);
 
-  // Define the sensitive information to redact
   const sensitiveInfo = {
     phoneNumbers: ["123-456-7890", "987-654-3210"],
     ipAddresses: [],
@@ -49,13 +48,14 @@
     state: [],
   };
 
-  // Define the replacement strings
   const replacementStrings = {
     phoneNumbers: "REDACTED@phone.com",
     ipAddresses: "REDACTED@ip.com",
     emailAddresses: "REDACTED@admin.com",
     usernames: "REDACTED_USER",
     names: "REDACTED_NAME",
+    city: "REDACTED_CITY",
+    state: "REDACTED_STATE",
   };
 
   function redactText(text) {
@@ -70,6 +70,48 @@
       });
     });
     return redactedText;
+  }
+
+  function fetchLocationFromIP(ip) {
+    return new Promise((resolve, reject) => {
+      fetch(`https://ipapi.co/${ip}/json/`)
+        .then((response) => response.json())
+        .then((data) => {
+          const city = data.city;
+          const state = data.region;
+          if (city && state) {
+            sensitiveInfo.city.push(city);
+            sensitiveInfo.state.push(state);
+            resolve();
+          } else {
+            reject("City or state not found");
+          }
+        })
+        .catch((error) => reject(error));
+    });
+  }
+
+  function getPublicIP() {
+    return new Promise((resolve, reject) => {
+      fetch("https://api64.ipify.org?format=json")
+        .then((response) => response.json())
+        .then((data) => {
+          const publicIP = data.ip;
+          if (publicIP) {
+            sensitiveInfo.ipAddresses.push(publicIP);
+            fetchLocationFromIP(publicIP)
+              .then(() => {
+                redactNode(document.body);
+                document.documentElement.removeChild(overlay);
+                resolve(publicIP);
+              })
+              .catch((error) => reject(error));
+          } else {
+            reject("No public IP found");
+          }
+        })
+        .catch((error) => reject(error));
+    });
   }
 
   function redactNode(node) {
@@ -91,26 +133,6 @@
       selection.removeAllRanges();
       selection.addRange(range);
     }
-  }
-
-  function getPublicIP() {
-    return new Promise((resolve, reject) => {
-      fetch("https://api64.ipify.org?format=json")
-        .then((response) => response.json())
-        .then((data) => {
-          const publicIP = data.ip;
-          if (publicIP) {
-            sensitiveInfo.ipAddresses.push(publicIP);
-            console.log("Public IP Address:", publicIP);
-            redactNode(document.body);
-            document.documentElement.removeChild(overlay);
-            resolve(publicIP);
-          } else {
-            reject("No public IP found");
-          }
-        })
-        .catch((error) => reject(error));
-    });
   }
 
   window.addEventListener("load", () => {
