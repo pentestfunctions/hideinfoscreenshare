@@ -19,6 +19,7 @@
   overlay.style.width = "100vw";
   overlay.style.height = "100vh";
   overlay.style.backgroundColor = "rgba(0, 0, 0, 0.7)";
+  overlay.style.backdropFilter = "blur(10px)";
   overlay.style.zIndex = "1000000";
   overlay.innerHTML =
     '<div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: #383A40; padding: 20px; border-radius: 20px; text-align: center;">' +
