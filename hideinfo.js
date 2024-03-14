@@ -12,6 +12,12 @@
 (function () {
   "use strict";
 
+  const whitelistedSites = ["duckduckgo.com"]; // add domains here to whitelist
+
+  if (whitelistedSites.includes(window.location.hostname)) {
+    return;
+  }
+
   const overlay = document.createElement("div");
   overlay.style.position = "fixed";
   overlay.style.top = "0";
