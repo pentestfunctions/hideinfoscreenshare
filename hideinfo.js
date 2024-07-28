@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Redact Sensitive Information
 // @namespace    http://tampermonkey.net/
-// @version      0.1
+// @version      0.2
 // @description  Redact predefined sensitive information on webpages
 // @author       Robot
 // @match        *://*/*
@@ -12,28 +12,52 @@
 (function() {
     'use strict';
 
-    // Create an overlay element
-    const overlay = document.createElement('div');
-    overlay.style.position = 'fixed';
-    overlay.style.top = '0';
-    overlay.style.left = '0';
-    overlay.style.width = '100vw';
-    overlay.style.height = '100vh';
-    overlay.style.backgroundColor = 'gray'; // Non-transparent gray
-    overlay.style.zIndex = '1000000'; // High z-index to cover everything
-    overlay.innerHTML = '<div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center;">' +
-                        '<div class="spinner" style="margin: 20px auto; width: 40px; height: 40px; position: relative;">' +
-                        '<div style="box-sizing: border-box; display: block; position: absolute; width: 32px; height: 32px; margin: 8px; border: 8px solid #fff; border-radius: 50%; animation: spinner 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite; border-color: #000 transparent transparent transparent;"></div>' +
-                        '</div>' +
-                        '<p style="color: #fff; font-size: 18px;">Redacting...</p>' +
-                        '</div>';
-    document.documentElement.appendChild(overlay); // Append overlay to the html element as early as possible
+    // Configuration Object
+    const config = {
+        overlay: {
+            backgroundColor: 'rgba(128, 128, 128, 0.9)', // Semi-transparent gray
+            zIndex: '1000000'
+        },
+        redactionDelay: 2000 // 2000 milliseconds (2 seconds) delay
+    };
 
-    // Define the spinner animation securely
-    const style = document.createElement('style');
-    style.type = 'text/css';
-    style.innerHTML = '@keyframes spinner {0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); }}';
-    document.head.appendChild(style); // Append style to the head element as early as possible
+    // Create an overlay element
+    function createOverlay() {
+        const overlay = document.createElement('div');
+        overlay.style.position = 'fixed';
+        overlay.style.top = '0';
+        overlay.style.left = '0';
+        overlay.style.width = '100vw';
+        overlay.style.height = '100vh';
+        overlay.style.backgroundColor = config.overlay.backgroundColor;
+        overlay.style.zIndex = config.overlay.zIndex;
+        overlay.innerHTML = `
+            <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center;">
+                <div class="spinner" style="margin: 20px auto; width: 40px; height: 40px; position: relative;">
+                    <div style="box-sizing: border-box; display: block; position: absolute; width: 32px; height: 32px; margin: 8px; border: 8px solid #fff; border-radius: 50%; animation: spinner 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite; border-color: #000 transparent transparent transparent;"></div>
+                </div>
+                <p style="color: #fff; font-size: 18px;">Redacting...</p>
+            </div>`;
+        return overlay;
+    }
+
+    // Create spinner animation
+    function createSpinnerStyle() {
+        const style = document.createElement('style');
+        style.type = 'text/css';
+        style.innerHTML = `
+            @keyframes spinner {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+            }`;
+        return style;
+    }
+
+    // Append overlay and style
+    const overlay = createOverlay();
+    const spinnerStyle = createSpinnerStyle();
+    document.documentElement.appendChild(overlay);
+    document.head.appendChild(spinnerStyle);
 
     // Define the sensitive information to redact
     const toRedact = {
@@ -57,7 +81,7 @@
         let redactedText = text;
         Object.keys(toRedact).forEach(category => {
             toRedact[category].forEach(item => {
-                const regex = new RegExp(item, 'gi'); // Case insensitive matching
+                const regex = new RegExp(item, 'gi');
                 redactedText = redactedText.replace(regex, redacted[category]);
             });
         });
@@ -85,11 +109,13 @@
         }
     }
 
+    function startRedaction() {
+        redactNode(document.body);
+        document.documentElement.removeChild(overlay);
+    }
+
     window.addEventListener('load', () => {
-        setTimeout(() => {
-            redactNode(document.body); // Start redaction process after a delay
-            document.documentElement.removeChild(overlay); // Remove overlay after initial redaction
-        }, 2000); // 2000 milliseconds (2 seconds) delay. Adjust as needed.
+        setTimeout(startRedaction, config.redactionDelay);
     });
 
 })();
